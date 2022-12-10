@@ -49,21 +49,20 @@ function setup() {
   button.size(50,50);
   button.mouseClicked(drop);
   
-  rope = new Rope(7,{x:245,y:30});
-  ground = new Ground(200,690,600,20);
 
   blink.frameDelay = 20;
   eat.frameDelay = 20;
   sad.frameDelay = 20;
-
   bunny = createSprite(230,620,100,100);
   bunny.scale = 0.2;
 
   bunny.addAnimation('blinking',blink);
-
   bunny.addAnimation('eating',eat);
   bunny.addAnimation('crying',sad);
   bunny.changeAnimation('blinking');
+  
+  rope = new Rope(7,{x:245,y:30});
+  ground = new Ground(200,690,600,20);
   
   fruit = Bodies.circle(300,300,20);
   Matter.Composite.add(rope.body,fruit);
@@ -81,27 +80,35 @@ function draw()
   background(51);
   image(bg_img,width/2,height/2,490,690);
 
-  if(fruit!=null){
-    image(food,fruit.position.x,fruit.position.y,70,70);
-  }
+  image(food,fruit.position.x,fruit.position.y,70,70);
 
   rope.show();
-  Engine.update(engine);
-  ground.show();
-
-  if(collide(fruit,bunny)==true)
-  {
-    bunny.changeAnimation('eating');
+  if(fruit!= null){
+    image(food,fruit.position.x,fruit.position.y,70,70);
   }
-   
-  if(collide(fruit,ground.body)==true )
-  {
-     bunny.changeAnimation('crying');
-   }
+  Engine.update(engine);
+  if (collide(fruit,bunny)== true){
+    bunny.changeAnimation("eating");
+  }
+  if(collide(fruit,ground.body)== true){
+    bunny.changeAnimation("crying"); 
+  }
+  ground.show();
 
    drawSprites();
 }
-
+function collide(body,sprite){
+  if (body!= null){
+    var d =dist (body.position.x,body.position.y,sprite.position.x,sprite.position.y);
+    if(d<=80){
+      World.remove(engine.world,fruit);
+      fruit=null;
+      return true;
+    } else{
+      return false;
+    }
+  }
+}
 function drop()
 {
   rope.break();
@@ -109,19 +116,3 @@ function drop()
   fruit_con = null; 
 }
 
-function collide(body,sprite)
-{
-  if(body!=null)
-        {
-         var d = dist(body.position.x,body.position.y,sprite.position.x,sprite.position.y);
-          if(d<=80)
-            {
-              World.remove(engine.world,fruit);
-               fruit = null;
-               return true; 
-            }
-            else{
-              return false;
-            }
-         }
-}
